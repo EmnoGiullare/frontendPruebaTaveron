@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import AuthService from '../../services/AuthService'
+import PasswordChangeModal from '../PasswordChangeModal/PasswordChangeModal'
 import './Profile.css'
 
 const Profile = () => {
@@ -9,7 +10,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
-  const [showPasswordForm, setShowPasswordForm] = useState(false)
+  const [showPasswordModal, setShowPasswordModal] = useState(false)
 
   const [formData, setFormData] = useState({
     first_name: '',
@@ -18,12 +19,6 @@ const Profile = () => {
     phone: '',
     address: '',
     username: ''
-  })
-
-  const [passwordData, setPasswordData] = useState({
-    old_password: '',
-    new_password: '',
-    new_password_confirm: ''
   })
 
   // Limpiar mensajes después de 5 segundos
@@ -43,7 +38,6 @@ const Profile = () => {
 
   // Sincronizar formData cuando user cambie
   useEffect(() => {
-    console.log('Usuario en Profile (useEffect):', user)
     if (user) {
       const newFormData = {
         first_name: user.first_name || '',
@@ -53,7 +47,6 @@ const Profile = () => {
         address: user.address || '',
         username: user.username || ''
       }
-      console.log('Actualizando formData:', newFormData)
       setFormData(newFormData)
     }
   }, [user])
@@ -61,13 +54,6 @@ const Profile = () => {
   const handleInputChange = e => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
-
-  const handlePasswordChange = e => {
-    setPasswordData({
-      ...passwordData,
       [e.target.name]: e.target.value
     })
   }
@@ -101,21 +87,17 @@ const Profile = () => {
     setSuccess('')
 
     try {
-      console.log('Guardando perfil con datos:', formData)
       const result = await AuthService.updateProfile(formData)
-      console.log('Resultado de actualización:', result)
 
       if (result.success && result.data) {
         setSuccess('Perfil actualizado correctamente')
         setIsEditing(false)
 
         // Actualizar el contexto de usuario
-        console.log('Actualizando contexto con:', result.data)
         updateUser(result.data)
 
         // Forzar re-render esperando un momento para que el contexto se actualice
         setTimeout(() => {
-          console.log('Usuario después de timeout:', result.data)
           setFormData({
             first_name: result.data.first_name || '',
             last_name: result.data.last_name || '',
@@ -136,55 +118,15 @@ const Profile = () => {
     setLoading(false)
   }
 
-  const handlePasswordSubmit = async e => {
-    e.preventDefault()
-
-    if (passwordData.new_password !== passwordData.new_password_confirm) {
-      setError('Las contraseñas nuevas no coinciden')
-      return
-    }
-
-    if (passwordData.new_password.length < 6) {
-      setError('La nueva contraseña debe tener al menos 6 caracteres')
-      return
-    }
-
-    setLoading(true)
-    setError('')
-
-    try {
-      const result = await AuthService.changePassword(passwordData)
-
-      if (result.success) {
-        setSuccess('Contraseña cambiada correctamente')
-        setShowPasswordForm(false)
-        setPasswordData({
-          old_password: '',
-          new_password: '',
-          new_password_confirm: ''
-        })
-      } else {
-        setError(result.error || 'Error al cambiar la contraseña')
-      }
-    } catch (error) {
-      setError(error.message || 'Error al cambiar la contraseña')
-    }
-
-    setLoading(false)
-  }
-
   const refreshProfile = async () => {
     setLoading(true)
     setError('')
     setSuccess('')
 
     try {
-      console.log('Refrescando perfil...')
       const result = await AuthService.getProfile()
-      console.log('Resultado de refresh:', result)
 
       if (result.success && result.data) {
-        console.log('Actualizando contexto desde refresh con:', result.data)
         updateUser(result.data)
         setSuccess('Perfil actualizado desde el servidor')
 
@@ -208,6 +150,10 @@ const Profile = () => {
     }
 
     setLoading(false)
+  }
+
+  const handlePasswordChangeSuccess = () => {
+    setSuccess('Contraseña cambiada correctamente')
   }
 
   // Mostrar loading si no hay usuario
@@ -257,7 +203,7 @@ const Profile = () => {
 
           <button
             className='change-password-btn'
-            onClick={() => setShowPasswordForm(!showPasswordForm)}
+            onClick={() => setShowPasswordModal(true)}
           >
             🔐 Cambiar Contraseña
           </button>
@@ -373,69 +319,15 @@ const Profile = () => {
               </button>
             </div>
           )}
-
-          {/* Formulario de cambio de contraseña */}
-          {showPasswordForm && (
-            <div className='password-form-section'>
-              <h4>Cambiar Contraseña</h4>
-              <form onSubmit={handlePasswordSubmit}>
-                <div className='form-group'>
-                  <label>Contraseña Actual:</label>
-                  <input
-                    type='password'
-                    name='old_password'
-                    value={passwordData.old_password}
-                    onChange={handlePasswordChange}
-                    required
-                  />
-                </div>
-
-                <div className='form-group'>
-                  <label>Nueva Contraseña:</label>
-                  <input
-                    type='password'
-                    name='new_password'
-                    value={passwordData.new_password}
-                    onChange={handlePasswordChange}
-                    required
-                    minLength={6}
-                  />
-                </div>
-
-                <div className='form-group'>
-                  <label>Confirmar Nueva Contraseña:</label>
-                  <input
-                    type='password'
-                    name='new_password_confirm'
-                    value={passwordData.new_password_confirm}
-                    onChange={handlePasswordChange}
-                    required
-                    minLength={6}
-                  />
-                </div>
-
-                <div className='form-actions'>
-                  <button
-                    type='submit'
-                    className='save-button'
-                    disabled={loading}
-                  >
-                    {loading ? '⏳ Cambiando...' : '🔐 Cambiar Contraseña'}
-                  </button>
-                  <button
-                    type='button'
-                    className='cancel-button'
-                    onClick={() => setShowPasswordForm(false)}
-                    disabled={loading}
-                  >
-                    ❌ Cancelar
-                  </button>
-                </div>
-              </form>
-            </div>
-          )}
         </div>
       </div>
+
+      {/* Modal de cambio de contraseña */}
+      <PasswordChangeModal
+        isOpen={showPasswordModal}
+        onClose={() => setShowPasswordModal(false)}
+        onSuccess={handlePasswordChangeSuccess}
+      />
     </div>
   )
 }

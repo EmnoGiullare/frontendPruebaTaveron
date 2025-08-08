@@ -20,20 +20,7 @@ class ApiService {
     }
 
     try {
-      console.log('Enviando petición:', {
-        url,
-        method: config.method,
-        headers: config.headers,
-        body: config.body
-      })
-
       const response = await fetch(url, config)
-
-      console.log('Respuesta recibida:', {
-        status: response.status,
-        statusText: response.statusText,
-        headers: Object.fromEntries(response.headers.entries())
-      })
 
       // Si la respuesta está vacía (como en DELETE), retornar éxito
       if (
@@ -44,7 +31,6 @@ class ApiService {
       }
 
       const data = await response.json()
-      console.log('Datos de respuesta:', data)
 
       if (!response.ok) {
         throw new Error(
@@ -61,7 +47,6 @@ class ApiService {
         // Error de parsing JSON - probablemente respuesta vacía exitosa
         return { success: true }
       }
-      console.error('Error en petición:', error)
       throw new Error(`Error de conexión: ${error.message}`)
     }
   }

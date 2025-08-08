@@ -19,7 +19,6 @@ export const AuthProvider = ({ children }) => {
   const syncUserFromStorage = () => {
     try {
       const userData = AuthService.getUser()
-      console.log('Sincronizando usuario desde localStorage:', userData)
       setUser(userData)
       return userData
     } catch (error) {
@@ -33,7 +32,6 @@ export const AuthProvider = ({ children }) => {
       try {
         const token = AuthService.getToken()
         const userData = AuthService.getUser()
-        console.log('Inicializando auth:', { token: !!token, userData })
 
         if (token && userData) {
           setUser(userData)
@@ -70,7 +68,6 @@ export const AuthProvider = ({ children }) => {
   }
 
   const updateUser = userData => {
-    console.log('Actualizando usuario en contexto:', userData)
     setUser(userData)
     // También actualizar localStorage para mantener sincronización
     if (userData) {
