@@ -20,6 +20,25 @@ class AuthService {
     }
   }
 
+  // ============ NUEVO MÉTODO DE REGISTRO ============
+  static async register (userData) {
+    try {
+      console.log('Registrando usuario:', userData)
+      const response = await ApiService.register(userData)
+      console.log('Respuesta de registro:', response)
+
+      // El servidor devuelve { message: "...", user: {...} }
+      if (response.user || response.id) {
+        return { success: true, data: response }
+      }
+
+      return { success: true, data: response }
+    } catch (error) {
+      console.error('Error en register:', error)
+      return { success: false, error: error.message }
+    }
+  }
+
   static logout () {
     localStorage.removeItem(this.TOKEN_KEY)
     localStorage.removeItem(this.USER_KEY)
@@ -52,7 +71,7 @@ class AuthService {
     }
   }
 
-  // ============ NUEVOS MÉTODOS PARA PERFIL ============
+  // ============ MÉTODOS PARA PERFIL ============
   static async getProfile () {
     const token = this.getToken()
     if (!token) {
@@ -61,7 +80,6 @@ class AuthService {
 
     try {
       const response = await ApiService.getProfile(token)
-
       const userData = response.user || response
 
       // Actualizar localStorage con los datos más recientes
@@ -84,9 +102,6 @@ class AuthService {
 
     try {
       const response = await ApiService.updateProfile(token, profileData)
-
-      // El servidor devuelve { message: "...", user: {...} }
-      // Necesitamos extraer solo el objeto user
       const userData = response.user || response
 
       // Actualizar la información del usuario en localStorage
@@ -109,7 +124,6 @@ class AuthService {
 
     try {
       const response = await ApiService.changePassword(token, passwordData)
-
       return { success: true, data: response }
     } catch (error) {
       console.error('Error en changePassword:', error)
