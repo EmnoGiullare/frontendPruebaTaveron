@@ -51,6 +51,96 @@ class AuthService {
       return { success: false, error: error.message }
     }
   }
+
+  // ============ NUEVOS MÉTODOS PARA PERFIL ============
+  static async getProfile () {
+    const token = this.getToken()
+    if (!token) {
+      throw new Error('No hay token disponible')
+    }
+
+    try {
+      const response = await ApiService.getProfile(token)
+      console.log('Respuesta del servidor (getProfile):', response)
+
+      const userData = response.user || response
+
+      // Actualizar localStorage con los datos más recientes
+      if (userData && (userData.id || userData.username)) {
+        localStorage.setItem(this.USER_KEY, JSON.stringify(userData))
+        console.log(
+          'Usuario actualizado en localStorage desde getProfile:',
+          userData
+        )
+      }
+
+      return { success: true, data: userData }
+    } catch (error) {
+      console.error('Error en getProfile:', error)
+      return { success: false, error: error.message }
+    }
+  }
+
+  static async updateProfile (profileData) {
+    const token = this.getToken()
+    if (!token) {
+      throw new Error('No hay token disponible')
+    }
+
+    try {
+      console.log('Datos del perfil a enviar:', profileData)
+      const response = await ApiService.updateProfile(token, profileData)
+      console.log('Respuesta del servidor (updateProfile):', response)
+
+      // El servidor devuelve { message: "...", user: {...} }
+      // Necesitamos extraer solo el objeto user
+      const userData = response.user || response
+
+      // Actualizar la información del usuario en localStorage
+      if (userData && (userData.id || userData.username)) {
+        localStorage.setItem(this.USER_KEY, JSON.stringify(userData))
+        console.log(
+          'Usuario actualizado en localStorage desde updateProfile:',
+          userData
+        )
+      }
+
+      return { success: true, data: userData }
+    } catch (error) {
+      console.error('Error en updateProfile:', error)
+      return { success: false, error: error.message }
+    }
+  }
+
+  static async changePassword (passwordData) {
+    const token = this.getToken()
+    if (!token) {
+      throw new Error('No hay token disponible')
+    }
+
+    try {
+      const response = await ApiService.changePassword(token, passwordData)
+      return { success: true, data: response }
+    } catch (error) {
+      return { success: false, error: error.message }
+    }
+  }
+
+  static async deleteProfile () {
+    const token = this.getToken()
+    if (!token) {
+      throw new Error('No hay token disponible')
+    }
+
+    try {
+      const response = await ApiService.deleteProfile(token)
+      // Limpiar localStorage después de eliminar la cuenta
+      this.logout()
+      return { success: true, data: response }
+    } catch (error) {
+      return { success: false, error: error.message }
+    }
+  }
 }
 
 export default AuthService
