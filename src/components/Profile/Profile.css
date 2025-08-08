@@ -68,7 +68,13 @@
 .profile-username {
     color: #7f8c8d;
     font-style: italic;
-    margin: 0;
+    margin: 0 0 1.5rem 0;
+}
+
+.profile-actions-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
 .profile-form {
@@ -215,12 +221,37 @@
     border-radius: 6px;
     cursor: pointer;
     font-size: 0.9rem;
-    margin-top: 1rem;
-    transition: background-color 0.3s;
+    transition: all 0.3s;
+    width: 100%;
 }
 
 .change-password-btn:hover {
     background-color: #545b62;
+    transform: translateY(-1px);
+}
+
+.delete-account-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+    width: 100%;
+}
+
+.delete-account-btn:hover:not(:disabled) {
+    background-color: #c82333;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.delete-account-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .password-form-section {
@@ -251,5 +282,18 @@
 
     .form-actions {
         flex-direction: column;
+    }
+
+    .profile-actions-section {
+        flex-direction: row;
+        gap: 0.5rem;
+    }
+
+    .change-password-btn,
+    .delete-account-btn {
+        width: auto;
+        flex: 1;
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
     }
 }

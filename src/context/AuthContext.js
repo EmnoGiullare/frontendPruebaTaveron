@@ -27,6 +27,53 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
+  // Escuchar cambios en localStorage
+  useEffect(() => {
+    const handleStorageChange = e => {
+      if (e.key === 'auth_user' || e.key === 'auth_token') {
+        console.log('Cambio detectado en localStorage:', e.key, e.newValue)
+
+        // Si se eliminó el token o el usuario, hacer logout
+        if (e.newValue === null) {
+          console.log('Token o usuario eliminado, haciendo logout...')
+          setUser(null)
+        } else if (e.key === 'auth_user' && e.newValue) {
+          // Si se actualizó el usuario, sincronizar
+          try {
+            const userData = JSON.parse(e.newValue)
+            setUser(userData)
+          } catch (error) {
+            console.error('Error al parsear usuario desde localStorage:', error)
+          }
+        }
+      }
+    }
+
+    // Escuchar cambios en localStorage desde otras pestañas/ventanas
+    window.addEventListener('storage', handleStorageChange)
+
+    // También verificar periódicamente si hay cambios
+    const checkAuthStatus = () => {
+      const token = AuthService.getToken()
+      const userData = AuthService.getUser()
+
+      if (!token || !userData) {
+        // Si no hay token o usuario, hacer logout
+        if (user !== null) {
+          console.log('No hay token o usuario, haciendo logout...')
+          setUser(null)
+        }
+      }
+    }
+
+    const intervalId = setInterval(checkAuthStatus, 1000) // Verificar cada segundo
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange)
+      clearInterval(intervalId)
+    }
+  }, [user])
+
   useEffect(() => {
     const initAuth = () => {
       try {
@@ -88,6 +135,21 @@ export const AuthProvider = ({ children }) => {
     return null
   }
 
+  // ============ NUEVO MÉTODO PARA ELIMINAR CUENTA ============
+  const deleteAccount = async () => {
+    try {
+      const result = await AuthService.deleteProfile()
+      if (result.success) {
+        console.log('Cuenta eliminada, limpiando estado...')
+        setUser(null) // Forzar logout inmediato
+      }
+      return result
+    } catch (error) {
+      console.error('Error al eliminar cuenta:', error)
+      return { success: false, error: error.message }
+    }
+  }
+
   const isAuthenticated = !!user && !!AuthService.getToken()
 
   const value = {
@@ -98,6 +160,7 @@ export const AuthProvider = ({ children }) => {
     updateUser,
     refreshUser,
     syncUserFromStorage,
+    deleteAccount,
     isAuthenticated
   }
 

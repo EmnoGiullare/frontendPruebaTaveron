@@ -141,6 +141,12 @@ class AuthService {
       const response = await ApiService.deleteProfile(token)
       // Limpiar localStorage después de eliminar la cuenta
       this.logout()
+
+      // Forzar recarga de la página para asegurar logout completo, descomentar si hay problemas en produccion.
+      // setTimeout(() => {
+      //   window.location.reload()
+      // }, 500)
+
       return { success: true, data: response }
     } catch (error) {
       return { success: false, error: error.message }

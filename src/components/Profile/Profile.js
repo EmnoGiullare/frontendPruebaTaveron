@@ -2,15 +2,18 @@ import React, { useState, useEffect } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import AuthService from '../../services/AuthService'
 import PasswordChangeModal from '../PasswordChangeModal/PasswordChangeModal'
+import ConfirmModal from '../ConfirmModal/ConfirmModal'
 import './Profile.css'
 
 const Profile = () => {
-  const { user, updateUser } = useAuth()
+  const { user, updateUser, deleteAccount } = useAuth()
   const [isEditing, setIsEditing] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [showPasswordModal, setShowPasswordModal] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const [formData, setFormData] = useState({
     first_name: '',
@@ -156,6 +159,31 @@ const Profile = () => {
     setSuccess('Contraseña cambiada correctamente')
   }
 
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true)
+
+    try {
+      console.log('Iniciando eliminación de cuenta...')
+
+      // Usar el método del contexto en lugar del AuthService directamente
+      const result = await deleteAccount()
+
+      if (result.success) {
+        console.log('Cuenta eliminada exitosamente')
+        setShowDeleteModal(false)
+      } else {
+        setError(result.error || 'Error al eliminar la cuenta')
+        setShowDeleteModal(false)
+      }
+    } catch (error) {
+      console.error('Error al eliminar cuenta:', error)
+      setError(error.message || 'Error al eliminar la cuenta')
+      setShowDeleteModal(false)
+    }
+
+    setIsDeleting(false)
+  }
+
   // Mostrar loading si no hay usuario
   if (!user) {
     return (
@@ -201,12 +229,22 @@ const Profile = () => {
           </h3>
           <p className='profile-username'>@{user?.username}</p>
 
-          <button
-            className='change-password-btn'
-            onClick={() => setShowPasswordModal(true)}
-          >
-            🔐 Cambiar Contraseña
-          </button>
+          <div className='profile-actions-section'>
+            <button
+              className='change-password-btn'
+              onClick={() => setShowPasswordModal(true)}
+            >
+              🔐 Cambiar Contraseña
+            </button>
+
+            <button
+              className='delete-account-btn'
+              onClick={() => setShowDeleteModal(true)}
+              disabled={loading || isDeleting}
+            >
+              🗑️ Eliminar Cuenta
+            </button>
+          </div>
         </div>
 
         <div className='profile-form'>
@@ -327,6 +365,38 @@ const Profile = () => {
         isOpen={showPasswordModal}
         onClose={() => setShowPasswordModal(false)}
         onSuccess={handlePasswordChangeSuccess}
+      />
+
+      {/* Modal de confirmación de eliminación */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDeleteAccount}
+        title='🗑️ Eliminar Cuenta'
+        message={
+          <div>
+            <p>
+              <strong>¿Estás seguro de que deseas eliminar tu cuenta?</strong>
+            </p>
+            <p>
+              Esta acción es <strong>irreversible</strong> y tendrá las
+              siguientes consecuencias:
+            </p>
+            <ul>
+              <li>Se eliminarán todos tus datos personales</li>
+              <li>Perderás el acceso a tu cuenta permanentemente</li>
+              <li>No podrás recuperar la información posteriormente</li>
+              <li>Serás desconectado inmediatamente</li>
+            </ul>
+            <p>
+              Si estás seguro, haz clic en <strong>"Eliminar Cuenta"</strong>.
+            </p>
+          </div>
+        }
+        confirmText='Eliminar Cuenta'
+        cancelText='Cancelar'
+        type='danger'
+        loading={isDeleting}
       />
     </div>
   )
