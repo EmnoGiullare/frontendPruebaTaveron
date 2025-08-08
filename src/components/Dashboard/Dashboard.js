@@ -4,7 +4,7 @@ import AuthService from '../../services/AuthService'
 import './Dashboard.css'
 
 const Dashboard = () => {
-  const { user, logout } = useAuth()
+  const { user } = useAuth()
   const [testResult, setTestResult] = useState(null)
   const [testing, setTesting] = useState(false)
 
@@ -24,28 +24,54 @@ const Dashboard = () => {
 
   return (
     <div className='dashboard'>
-      <header className='dashboard-header'>
+      <div className='dashboard-header'>
         <h1>Dashboard</h1>
-        <button onClick={logout} className='logout-button'>
-          Cerrar Sesión
-        </button>
-      </header>
+        <p>Bienvenido de vuelta, {user?.first_name || user?.username}!</p>
+      </div>
 
       <div className='dashboard-content'>
-        <div className='user-info'>
-          <h2>Información del Usuario</h2>
-          <p>
-            <strong>Usuario:</strong> {user?.username}
-          </p>
-          <p>
-            <strong>Email:</strong> {user?.email}
-          </p>
-          <p>
-            <strong>Nombre:</strong> {user?.first_name} {user?.last_name}
-          </p>
+        <div className='dashboard-cards'>
+          <div className='dashboard-card'>
+            <div className='card-icon'>👤</div>
+            <div className='card-content'>
+              <h3>Perfil</h3>
+              <p>Gestiona tu información personal</p>
+            </div>
+          </div>
+
+          <div className='dashboard-card'>
+            <div className='card-icon'>📊</div>
+            <div className='card-content'>
+              <h3>Estadísticas</h3>
+              <p>Visualiza tus datos</p>
+            </div>
+          </div>
+
+          <div className='dashboard-card'>
+            <div className='card-icon'>⚙️</div>
+            <div className='card-content'>
+              <h3>Configuración</h3>
+              <p>Ajusta las preferencias</p>
+            </div>
+          </div>
         </div>
 
-        <div className='api-test'>
+        <div className='user-info-section'>
+          <h2>Información del Usuario</h2>
+          <div className='user-details-grid'>
+            <div className='user-detail-item'>
+              <strong>Usuario:</strong> {user?.username}
+            </div>
+            <div className='user-detail-item'>
+              <strong>Email:</strong> {user?.email}
+            </div>
+            <div className='user-detail-item'>
+              <strong>Nombre:</strong> {user?.first_name} {user?.last_name}
+            </div>
+          </div>
+        </div>
+
+        <div className='api-test-section'>
           <h2>Probar API Protegida</h2>
           <button
             onClick={handleTestProtectedEndpoint}
