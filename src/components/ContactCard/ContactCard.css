@@ -1,0 +1,249 @@
+.contact-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s;
+    border: 1px solid #e0e0e0;
+}
+
+.contact-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Vista Grid */
+.contact-card.grid {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    min-height: 280px;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.contact-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.contact-avatar.large {
+    width: 60px;
+    height: 60px;
+    font-size: 1.3rem;
+}
+
+.btn-favorite {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+
+.btn-favorite:hover {
+    background: rgba(52, 152, 219, 0.1);
+}
+
+.btn-favorite.active {
+    color: #f39c12;
+}
+
+.card-body {
+    flex: 1;
+    margin-bottom: 1rem;
+}
+
+.contact-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0 0 0.5rem 0;
+    line-height: 1.3;
+}
+
+.contact-company {
+    color: #3498db;
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.contact-position {
+    color: #7f8c8d;
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+    font-style: italic;
+}
+
+.contact-details {
+    font-size: 0.8rem;
+    color: #555;
+}
+
+.contact-details>div {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.contact-phone,
+.contact-email {
+    word-break: break-all;
+}
+
+.contact-type {
+    color: #8e44ad;
+    font-weight: 500;
+}
+
+.contact-notes {
+    margin-top: 0.75rem;
+    padding: 0.5rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    color: #666;
+    font-style: italic;
+}
+
+.card-footer {
+    display: flex;
+    gap: 0.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e0e0e0;
+}
+
+.card-footer .btn {
+    flex: 1;
+    padding: 0.5rem;
+    font-size: 0.8rem;
+}
+
+/* Vista Lista */
+.contact-card.list {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    gap: 1rem;
+}
+
+.contact-card.list .contact-info {
+    flex: 2;
+    min-width: 0;
+}
+
+.contact-card.list .contact-name {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.favorite-star {
+    color: #f39c12;
+    font-size: 0.9rem;
+}
+
+.contact-card.list .contact-details {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.85rem;
+    color: #7f8c8d;
+}
+
+.contact-card.list .company {
+    color: #3498db;
+    font-weight: 500;
+}
+
+.contact-card.list .contact-secondary {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.85rem;
+    color: #555;
+    min-width: 0;
+}
+
+.contact-card.list .contact-phone,
+.contact-card.list .contact-email {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.contact-card.list .contact-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.contact-card.list .contact-actions button {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.btn-edit {
+    color: #3498db;
+}
+
+.btn-edit:hover {
+    background: rgba(52, 152, 219, 0.1);
+}
+
+.btn-delete {
+    color: #e74c3c;
+}
+
+.btn-delete:hover {
+    background: rgba(231, 76, 60, 0.1);
+}
+
+/* Responsive para tarjetas */
+@media (max-width: 768px) {
+    .contact-card.list {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .contact-card.list .contact-secondary,
+    .contact-card.list .contact-actions {
+        width: 100%;
+    }
+
+    .contact-card.list .contact-actions {
+        justify-content: flex-end;
+    }
+
+    .contact-card.list .contact-details {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .contact-card.grid {
+        min-height: auto;
+    }
+}
